@@ -7,8 +7,10 @@ import path from 'path';
 import { BACKEND_PORT } from "./config";
 import http from "http";
 import { BACKEND_URL, FRONTEND_URL } from "./config/config";
+import { RaydiumSnipingRoute } from "./routes";
 // import { UserRouter } from "./routes";
 // import TokenRouter from "./routes/TokenRoute";
+
 
 // Load environment variables from .env file
 dotenv.config();
@@ -28,8 +30,10 @@ const corsOptions = {
     }
   },
 };
+
 app.use(express.json());
 // { extended: false }
+
 app.use(cors(corsOptions));
 
 // Serve static files from the 'public' folder
@@ -44,7 +48,7 @@ app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 const server = http.createServer(app);
 
 // Define routes for different API endpoints
-// app.use("/api/users", UserRouter);
+app.use("/api/v1/snipingbot/raydium", RaydiumSnipingRoute);
 // app.use("/api/tokens", TokenRouter);
 
 // Define a route to check if the backend server is running
