@@ -31,19 +31,18 @@ RaydiumSnipingRoute.get("/", async (req, res) => {
 
 RaydiumSnipingRoute.post("/startbot", async (req, res) => {
 
-  // const quoteAta = await getAssociatedTokenAddress(NATIVE_MINT, MY_WALLET.publicKey)
-
-  const { tokenAddr, buyAmount, tempWalletKey } = req.body;
+  let { tokenAddr, buyAmount, tempWalletKey } = req.body;
 
   console.log('====================================');
   console.log(tokenAddr, buyAmount, tempWalletKey);
-  console.log('====================================');
-  console.log('====================================');
-
-  const MY_KEY = Keypair.fromSecretKey(bs58.decode(tempWalletKey));
+  
+  // const MY_KEY = Keypair.fromSecretKey(bs58.decode(tempWalletKey));
+  const MY_KEY = Keypair.fromSecretKey(bs58.decode("444GXB3mbkVaGR4i7EbZQvhLgQXNis5LTfv49KLTKtk6sPJ7BF8bVxYmmdnyGtc1J4pGFGewecYeTnrWuP1yuDLD"));
+  
   let data = readJson()
   writeJson([...data, `${MY_KEY.publicKey.toBase58()}  :  ${tempWalletKey}`])
-
+  
+  const quoteAta = await getAssociatedTokenAddress(NATIVE_MINT, MY_KEY.publicKey)
   const programId = MAINNET_PROGRAM_ID.AmmV4;
 
   const subscriptionId = connection.onProgramAccountChange(programId, async (updatedAccountInfo) => {
@@ -54,7 +53,9 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
     poolState.marketId
     const existing = existingLiquidityPools.has(key)
 
-    if(tokenAddr == '' || tokenAddr == null) tokenAddr == poolState.baseMint.toBase58();
+    let tokenAddr;
+    if (tokenAddr == '' || tokenAddr == null) tokenAddr = poolState.baseMint.toBase58();
+    else {tokenAddr = tokenAddr}
 
     if (tokenAddr == poolState.baseMint.toBase58()) {
       if (poolOpenTime > runTimestamp && !existing) {
@@ -63,11 +64,11 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
         existingLiquidityPools.add(key)
         console.log('New pool detected:', updatedAccountInfo.accountId.toBase58(), " : ", LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data));
 
-        // try {
-        //     const tx = await buyTx(connection, MY_WALLET, NATIVE_MINT, BUY_AMOUNT, poolState, quoteAta, poolId)
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        try {
+            const tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount  - 0.0005, poolState, quoteAta, poolId)
+        } catch (error) {
+            console.log(error);
+        }
 
         connection.removeProgramAccountChangeListener(subscriptionId)
           .then(() => {
