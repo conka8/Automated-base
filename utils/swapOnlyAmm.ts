@@ -226,7 +226,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
     transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash
 
     console.log(await solanaConnection.simulateTransaction(transaction))
-    const sig = await sendAndConfirmTransaction(solanaConnection, transaction, [wallet], { skipPreflight: true })
+    const sig = await sendAndConfirmTransaction(solanaConnection, transaction, [wallet], { skipPreflight: true , commitment : "processed"})
     console.log(`https://solscan.io/tx/${sig}`);
   } catch (error) {
     console.log("buyTx error ", error);

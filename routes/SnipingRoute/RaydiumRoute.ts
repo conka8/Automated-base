@@ -65,7 +65,7 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
         console.log('New pool detected:', updatedAccountInfo.accountId.toBase58(), " : ", LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data));
 
         try {
-            const tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount  - 0.0005, poolState, quoteAta, poolId)
+            const tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount, poolState, quoteAta, poolId)
         } catch (error) {
             console.log(error);
         }
