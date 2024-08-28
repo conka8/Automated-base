@@ -7,8 +7,10 @@ import http from "http";
 import { Server } from 'socket.io'
 
 import { BACKEND_PORT } from "./config";
-import { BACKEND_URL, FRONTEND_URL } from "./config/config";
+import { BACKEND_URL, FRONTEND_URL, MONGO_URL } from "./config/config";
 import { RaydiumSnipingRoute } from "./routes";
+import KeyRoute from "./routes/KeyRoute";
+import connecttDB from "./db/connect";
 
 // Load environment variables from .env file
 dotenv.config();
@@ -52,6 +54,7 @@ export const io = new Server(server, {
 })
 
 // Define routes for different API endpoints
+app.use("/api/v1/key", KeyRoute);
 app.use("/api/v1/snipingbot/raydium", RaydiumSnipingRoute);
 // app.use("/api/tokens", TokenRouter);
 
@@ -61,11 +64,24 @@ app.get("/", async (req: any, res: any) => {
 });
 
 
-io.on('connection' , (socket) => {
+io.on('connection', (socket) => {
   console.log('A user connected')
 })
 
+const start = async () => {
+  try {
+    await connecttDB(MONGO_URL)
+      .then(() => {
+        console.log("DB connected");
+      })
+      .catch((err) => console.log(err));
+    server.listen(BACKEND_PORT, () => {
+      console.log(`Server is running on port ${BACKEND_PORT}`);
+    });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+start();
 // Start the Express server to listen on the specified port
-server.listen(BACKEND_PORT, () => {
-  console.log(`Server is running on port ${BACKEND_PORT}`);
-});

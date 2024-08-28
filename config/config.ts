@@ -13,6 +13,7 @@ try {
 export const BACKEND_PORT = process.env.PORT || 5000
 export const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173'
 export const BACKEND_URL = process.env.BACKEND_URL || 'https://localhost:5000'
+export const MONGO_URL = process.env.MONGO_URL || ''
 // export const JWT_SECRET = process.env.JWT_SECRET || "JWT_SECRET";
 
 export const connection = new Connection(process.env.MAIN_RPC || clusterApiUrl("mainnet-beta") , "processed")
