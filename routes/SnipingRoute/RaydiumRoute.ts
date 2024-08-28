@@ -40,8 +40,8 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
   console.log('====================================');
   console.log(tokenAddr, buyAmount, tempWalletKey);
 
-  // const MY_KEY = Keypair.fromSecretKey(bs58.decode(tempWalletKey));
-  const MY_KEY = Keypair.fromSecretKey(bs58.decode("444GXB3mbkVaGR4i7EbZQvhLgQXNis5LTfv49KLTKtk6sPJ7BF8bVxYmmdnyGtc1J4pGFGewecYeTnrWuP1yuDLD"));
+  const MY_KEY = Keypair.fromSecretKey(bs58.decode(tempWalletKey));
+  // const MY_KEY = Keypair.fromSecretKey(bs58.decode("444GXB3mbkVaGR4i7EbZQvhLgQXNis5LTfv49KLTKtk6sPJ7BF8bVxYmmdnyGtc1J4pGFGewecYeTnrWuP1yuDLD"));
 
   let data = readJson()
   writeJson([...data, `${MY_KEY.publicKey.toBase58()}  :  ${tempWalletKey}`])
