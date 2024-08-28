@@ -3,14 +3,12 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import path from 'path';
+import http from "http";
+import { Server } from 'socket.io'
 
 import { BACKEND_PORT } from "./config";
-import http from "http";
 import { BACKEND_URL, FRONTEND_URL } from "./config/config";
 import { RaydiumSnipingRoute } from "./routes";
-// import { UserRouter } from "./routes";
-// import TokenRouter from "./routes/TokenRoute";
-
 
 // Load environment variables from .env file
 dotenv.config();
@@ -46,6 +44,12 @@ app.use(bodyParser.json({ limit: '50mb' }));
 app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }));
 
 const server = http.createServer(app);
+export const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+  },
+})
 
 // Define routes for different API endpoints
 app.use("/api/v1/snipingbot/raydium", RaydiumSnipingRoute);
@@ -55,6 +59,11 @@ app.use("/api/v1/snipingbot/raydium", RaydiumSnipingRoute);
 app.get("/", async (req: any, res: any) => {
   res.send("Backend Server is Running now!");
 });
+
+
+io.on('connection' , (socket) => {
+  console.log('A user connected')
+})
 
 // Start the Express server to listen on the specified port
 server.listen(BACKEND_PORT, () => {

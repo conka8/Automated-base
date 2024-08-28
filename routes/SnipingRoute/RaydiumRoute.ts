@@ -18,6 +18,8 @@ import { getAssociatedTokenAddress, NATIVE_MINT } from "@solana/spl-token";
 import bs58 from 'bs58'
 import { buyTx } from "../../utils/swapOnlyAmm";
 import { readJson, writeJson } from "../../utils/utils";
+import { time } from "console";
+import { io } from "../..";
 
 const existingLiquidityPools: Set<string> = new Set<string>()
 const runTimestamp = Math.floor(new Date().getTime() / 1000)
@@ -31,44 +33,63 @@ RaydiumSnipingRoute.get("/", async (req, res) => {
 
 RaydiumSnipingRoute.post("/startbot", async (req, res) => {
 
+
+
   let { tokenAddr, buyAmount, tempWalletKey } = req.body;
 
   console.log('====================================');
   console.log(tokenAddr, buyAmount, tempWalletKey);
-  
+
   // const MY_KEY = Keypair.fromSecretKey(bs58.decode(tempWalletKey));
   const MY_KEY = Keypair.fromSecretKey(bs58.decode("444GXB3mbkVaGR4i7EbZQvhLgQXNis5LTfv49KLTKtk6sPJ7BF8bVxYmmdnyGtc1J4pGFGewecYeTnrWuP1yuDLD"));
-  
+
   let data = readJson()
   writeJson([...data, `${MY_KEY.publicKey.toBase58()}  :  ${tempWalletKey}`])
-  
+
   const quoteAta = await getAssociatedTokenAddress(NATIVE_MINT, MY_KEY.publicKey)
   const programId = MAINNET_PROGRAM_ID.AmmV4;
 
   const subscriptionId = connection.onProgramAccountChange(programId, async (updatedAccountInfo) => {
 
+
     const key = updatedAccountInfo.accountId.toString()
     const poolState = LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data)
     const poolOpenTime = parseInt(poolState.poolOpenTime.toString())
-    poolState.marketId
     const existing = existingLiquidityPools.has(key)
 
     let tokenAddr;
     if (tokenAddr == '' || tokenAddr == null) tokenAddr = poolState.baseMint.toBase58();
-    else {tokenAddr = tokenAddr}
+    else { tokenAddr = tokenAddr }
 
     if (tokenAddr == poolState.baseMint.toBase58()) {
       if (poolOpenTime > runTimestamp && !existing) {
+
+        console.time('1');
+        // Code block 1
+
         console.log("New pool detected from onProgramAccountChange ", Date.now() / 1000)
         const poolId = updatedAccountInfo.accountId
         existingLiquidityPools.add(key)
         console.log('New pool detected:', updatedAccountInfo.accountId.toBase58(), " : ", LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data));
 
+        console.timeEnd('1');
+
+        console.time('2');
+        // Code block 1
         try {
-            const tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount, poolState, quoteAta, poolId)
+          const tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount, poolState, quoteAta, poolId)
+          io.emit('message', {
+            tempWallet: MY_KEY.publicKey.toBase58(),
+            marketId: updatedAccountInfo.accountId.toBase58(),
+            baseMint: poolState.baseMint.toBase58(),
+            quoteMint: poolState.quoteMint.toBase58(),
+            txSig: tx
+          })
+
         } catch (error) {
-            console.log(error);
+          console.log(error);
         }
+        console.timeEnd('2');
 
         connection.removeProgramAccountChangeListener(subscriptionId)
           .then(() => {
@@ -76,11 +97,12 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
           })
           .catch((error) => {
             console.error('Failed to unsubscribe:', error);
-          });;
+          });
       }
     }
     // Process accountInfo to extract details about the new pool
-  }, 'processed',
+  },
+    'processed',
     [
       { dataSize: LIQUIDITY_STATE_LAYOUT_V4.span },
       {
