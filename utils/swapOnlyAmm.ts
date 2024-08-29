@@ -176,7 +176,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
   try {
     console.time('21');
     // Code block 1
-    const totalAmount = Math.floor((amount) * 10 ** 9) - 0.00203 * 10 ** 9;
+    const totalAmount = Math.floor((amount) * 10 ** 9);
     const quoteToken = new Token(TOKEN_PROGRAM_ID, quoteMint, 9);
     const quoteTokenAmount = new TokenAmount(quoteToken, totalAmount);
     const poolKeys = await createPoolKeys(poolId, poolState)
