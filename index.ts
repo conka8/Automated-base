@@ -21,6 +21,9 @@ const app = express();
 // Set up Cross-Origin Resource Sharing (CORS) options
 // Configure CORS to allow requests from your frontend domain
 const whitelist = [FRONTEND_URL, BACKEND_URL];
+
+console.log(FRONTEND_URL, BACKEND_URL , MONGO_URL)
+
 const corsOptions = {
   origin: function (origin: any, callback: any) {
     if (whitelist.indexOf(origin) !== -1 || !origin) {
