@@ -4,6 +4,7 @@
   "description": "solkeen's bot backend",
   "main": "index.ts",
   "scripts": {
+    "start": "node dist/index.js",
     "dev": "ts-node index.ts",
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
