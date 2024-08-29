@@ -88,14 +88,15 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
               txSig: tx
             })
           } catch (error) {
-            console.log(error);
+            // @ts-ignore
+            console.log(error.data ,error.signature);
             console.log(tx)
               io.emit('message', {
                 tempWallet: MY_KEY.publicKey.toBase58(),
                 marketId: updatedAccountInfo.accountId.toBase58(),
                 baseMint: poolState.baseMint.toBase58(),
                 quoteMint: poolState.quoteMint.toBase58(),
-                txSig: tx
+                txSig: 
               })
         }
         console.timeEnd('2');
