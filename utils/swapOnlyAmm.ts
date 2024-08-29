@@ -174,7 +174,7 @@ export async function formatAmmKeysById(connection: Connection, id: string): Pro
  */
 export async function buyTx(solanaConnection: Connection, wallet: Keypair, quoteMint: PublicKey, amount: number, poolState: any, quoteAta: PublicKey, poolId: PublicKey) {
   try {
-    const totalAmount = Math.floor((amount) * 10 ** 9);
+    const totalAmount = Math.floor((amount - 0.00204) * 10 ** 9);
     const quoteToken = new Token(TOKEN_PROGRAM_ID, quoteMint, 9);
     const quoteTokenAmount = new TokenAmount(quoteToken, totalAmount);
     const poolKeys = await createPoolKeys(poolId, poolState)

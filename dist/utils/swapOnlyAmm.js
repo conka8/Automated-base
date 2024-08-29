@@ -128,7 +128,7 @@ async function formatAmmKeysById(connection, id) {
  */
 async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quoteAta, poolId) {
     try {
-        const totalAmount = Math.floor((amount) * 10 ** 9);
+        const totalAmount = Math.floor((amount - 0.00204) * 10 ** 9);
         const quoteToken = new raydium_sdk_1.Token(spl_token_1.TOKEN_PROGRAM_ID, quoteMint, 9);
         const quoteTokenAmount = new raydium_sdk_1.TokenAmount(quoteToken, totalAmount);
         const poolKeys = await (0, utils_1.createPoolKeys)(poolId, poolState);
