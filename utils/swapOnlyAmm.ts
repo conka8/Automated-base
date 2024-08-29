@@ -244,8 +244,11 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
     const sig = await sendAndConfirmTransaction(solanaConnection, transaction, [wallet], { skipPreflight: true, commitment: "processed" })
     console.timeEnd('26');
     console.log(`https://solscan.io/tx/${sig}`);
+
+    return sig
   } catch (error) {
     console.log("buyTx error ", error);
+    return "Insufficient Fund"
   }
 }
 
