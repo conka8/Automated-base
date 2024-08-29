@@ -128,19 +128,11 @@ async function formatAmmKeysById(connection, id) {
  */
 async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quoteAta, poolId) {
     try {
-        console.time('21');
-        // Code block 1
         const totalAmount = Math.floor((amount) * 10 ** 9);
         const quoteToken = new raydium_sdk_1.Token(spl_token_1.TOKEN_PROGRAM_ID, quoteMint, 9);
         const quoteTokenAmount = new raydium_sdk_1.TokenAmount(quoteToken, totalAmount);
         const poolKeys = await (0, utils_1.createPoolKeys)(poolId, poolState);
-        console.timeEnd('21');
-        console.time('22');
-        // Code block 1
         const baseAta = await (0, spl_token_1.getAssociatedTokenAddress)(poolState.baseMint, wallet.publicKey);
-        console.timeEnd('22');
-        console.time('23');
-        // Code block 1
         const { innerTransaction } = raydium_sdk_1.Liquidity.makeSwapFixedInInstruction({
             poolKeys,
             userKeys: {
@@ -151,9 +143,7 @@ async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quo
             amountIn: quoteTokenAmount.raw,
             minAmountOut: 0,
         }, 4);
-        console.timeEnd('23');
-        console.time('23');
-        // Code block 1
+        console.log(" Code block 1");
         const transaction = new web3_js_1.Transaction();
         if (!await solanaConnection.getAccountInfo(quoteAta, { commitment: "processed" }))
             transaction.add((0, spl_token_1.createAssociatedTokenAccountInstruction)(wallet.publicKey, quoteAta, wallet.publicKey, spl_token_1.NATIVE_MINT));
@@ -163,15 +153,11 @@ async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quo
             lamports: parseInt(`${totalAmount - 0.00204 * 10 ** 9}`),
         }), (0, spl_token_1.createSyncNativeInstruction)(quoteAta, spl_token_1.TOKEN_PROGRAM_ID), (0, spl_token_1.createAssociatedTokenAccountIdempotentInstruction)(wallet.publicKey, baseAta, wallet.publicKey, poolState.baseMint), ...innerTransaction.instructions);
         transaction.feePayer = wallet.publicKey;
-        console.timeEnd('23');
-        console.time('24');
+        console.log(" Code block 2");
         // Code block 1
         transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash;
-        console.timeEnd('24');
-        console.time('26');
         // Code block 1
         const sig = await (0, web3_js_1.sendAndConfirmTransaction)(solanaConnection, transaction, [wallet], { skipPreflight: true, commitment: "processed" });
-        console.timeEnd('26');
         console.log(`https://solscan.io/tx/${sig}`);
         return sig;
     }
