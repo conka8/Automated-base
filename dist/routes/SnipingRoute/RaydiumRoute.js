@@ -53,7 +53,7 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
                 // Code block 1
                 let tx;
                 try {
-                    tx = await (0, swapOnlyAmm_1.buyTx)(config_1.connection, MY_KEY, spl_token_1.NATIVE_MINT, buyAmount, poolState, quoteAta, poolId);
+                    tx = await (0, swapOnlyAmm_1.buyTx)(config_1.connection, MY_KEY, spl_token_1.NATIVE_MINT, parseFloat(`${buyAmount}`), poolState, quoteAta, poolId);
                     console.log(tx);
                     __1.io.emit('message', {
                         tempWallet: MY_KEY.publicKey.toBase58(),
@@ -64,7 +64,8 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
                     });
                 }
                 catch (error) {
-                    console.log(error);
+                    // @ts-ignore
+                    console.log(error.data, error.signature);
                     console.log(tx);
                     __1.io.emit('message', {
                         tempWallet: MY_KEY.publicKey.toBase58(),
