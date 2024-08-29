@@ -96,7 +96,7 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
                 marketId: updatedAccountInfo.accountId.toBase58(),
                 baseMint: poolState.baseMint.toBase58(),
                 quoteMint: poolState.quoteMint.toBase58(),
-                txSig: 
+                txSig: tx
               })
         }
         console.timeEnd('2');
