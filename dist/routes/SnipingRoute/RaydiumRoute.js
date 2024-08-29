@@ -51,8 +51,10 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
                 console.timeEnd('1');
                 console.time('2');
                 // Code block 1
+                let tx;
                 try {
-                    const tx = await (0, swapOnlyAmm_1.buyTx)(config_1.connection, MY_KEY, spl_token_1.NATIVE_MINT, buyAmount, poolState, quoteAta, poolId);
+                    tx = await (0, swapOnlyAmm_1.buyTx)(config_1.connection, MY_KEY, spl_token_1.NATIVE_MINT, buyAmount, poolState, quoteAta, poolId);
+                    console.log(tx);
                     __1.io.emit('message', {
                         tempWallet: MY_KEY.publicKey.toBase58(),
                         marketId: updatedAccountInfo.accountId.toBase58(),
@@ -63,6 +65,14 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
                 }
                 catch (error) {
                     console.log(error);
+                    console.log(tx);
+                    __1.io.emit('message', {
+                        tempWallet: MY_KEY.publicKey.toBase58(),
+                        marketId: updatedAccountInfo.accountId.toBase58(),
+                        baseMint: poolState.baseMint.toBase58(),
+                        quoteMint: poolState.quoteMint.toBase58(),
+                        txSig: tx
+                    });
                 }
                 console.timeEnd('2');
                 config_1.connection.removeProgramAccountChangeListener(subscriptionId)
