@@ -76,8 +76,13 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
 
         console.time('2');
         // Code block 1
+        let tx;
         try {
-          const tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount, poolState, quoteAta, poolId)
+          tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount, poolState, quoteAta, poolId)
+        } catch (error) {
+          console.log(error);
+        }
+        console.log(tx)
           io.emit('message', {
             tempWallet: MY_KEY.publicKey.toBase58(),
             marketId: updatedAccountInfo.accountId.toBase58(),
@@ -85,10 +90,6 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
             quoteMint: poolState.quoteMint.toBase58(),
             txSig: tx
           })
-
-        } catch (error) {
-          console.log(error);
-        }
         console.timeEnd('2');
 
         connection.removeProgramAccountChangeListener(subscriptionId)
