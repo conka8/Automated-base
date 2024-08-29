@@ -174,20 +174,11 @@ export async function formatAmmKeysById(connection: Connection, id: string): Pro
  */
 export async function buyTx(solanaConnection: Connection, wallet: Keypair, quoteMint: PublicKey, amount: number, poolState: any, quoteAta: PublicKey, poolId: PublicKey) {
   try {
-    console.time('21');
-    // Code block 1
     const totalAmount = Math.floor((amount) * 10 ** 9);
     const quoteToken = new Token(TOKEN_PROGRAM_ID, quoteMint, 9);
     const quoteTokenAmount = new TokenAmount(quoteToken, totalAmount);
     const poolKeys = await createPoolKeys(poolId, poolState)
-    console.timeEnd('21');
-    console.time('22');
-    // Code block 1
     const baseAta = await getAssociatedTokenAddress(poolState.baseMint, wallet.publicKey)
-    console.timeEnd('22');
-
-    console.time('23');
-    // Code block 1
     const { innerTransaction } = Liquidity.makeSwapFixedInInstruction(
       {
         poolKeys,
@@ -202,10 +193,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
       },
       4,
     )
-    console.timeEnd('23');
-
-    console.time('23');
-    // Code block 1
+    console.log(" Code block 1")
     const transaction = new Transaction();
     if (!await solanaConnection.getAccountInfo(quoteAta, { commitment: "processed" }))
       transaction.add(
@@ -222,7 +210,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: quoteAta,
-        lamports: totalAmount - 0.00204 * 10 ** 9,
+        lamports: parseInt(`${totalAmount - 0.00204 * 10 ** 9}`),
       }),
       createSyncNativeInstruction(quoteAta, TOKEN_PROGRAM_ID),
       createAssociatedTokenAccountIdempotentInstruction(
@@ -234,21 +222,19 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
       ...innerTransaction.instructions,
     )
     transaction.feePayer = wallet.publicKey
-    console.timeEnd('23');
-    console.time('24');
+    console.log(" Code block 2")
+
     // Code block 1
     transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash
-    console.timeEnd('24');
-    console.time('26');
+
     // Code block 1
     const sig = await sendAndConfirmTransaction(solanaConnection, transaction, [wallet], { skipPreflight: true, commitment: "processed" })
-    console.timeEnd('26');
     console.log(`https://solscan.io/tx/${sig}`);
 
     return sig
   } catch (error) {
     console.log("buyTx error ", error);
-    return "Insufficient Fund"
+    return "Buy Error"
   }
 }
 
