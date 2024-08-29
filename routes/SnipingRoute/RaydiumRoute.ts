@@ -78,7 +78,7 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
         // Code block 1
         let tx;
         try {
-          tx = await buyTx(connection, MY_KEY, NATIVE_MINT, buyAmount, poolState, quoteAta, poolId)
+          tx = await buyTx(connection, MY_KEY, NATIVE_MINT, parseFloat(`${buyAmount}`), poolState, quoteAta, poolId)
           console.log(tx)
             io.emit('message', {
               tempWallet: MY_KEY.publicKey.toBase58(),
