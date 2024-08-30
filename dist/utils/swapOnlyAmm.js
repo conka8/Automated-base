@@ -128,11 +128,13 @@ async function formatAmmKeysById(connection, id) {
  */
 async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quoteAta, poolId) {
     try {
+        console.log("====================================1", Math.floor((amount) * 10 ** 9));
         const totalAmount = Math.floor((amount) * 10 ** 9);
         const quoteToken = new raydium_sdk_1.Token(spl_token_1.TOKEN_PROGRAM_ID, quoteMint, 9);
         const quoteTokenAmount = new raydium_sdk_1.TokenAmount(quoteToken, totalAmount);
         const poolKeys = await (0, utils_1.createPoolKeys)(poolId, poolState);
         const baseAta = await (0, spl_token_1.getAssociatedTokenAddress)(poolState.baseMint, wallet.publicKey);
+        console.log("====================================2");
         const { innerTransaction } = raydium_sdk_1.Liquidity.makeSwapFixedInInstruction({
             poolKeys,
             userKeys: {
@@ -143,6 +145,7 @@ async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quo
             amountIn: quoteTokenAmount.raw,
             minAmountOut: 0,
         }, 4);
+        console.log("====================================3");
         const transaction = new web3_js_1.Transaction();
         if (!await solanaConnection.getAccountInfo(quoteAta))
             transaction.add((0, spl_token_1.createAssociatedTokenAccountInstruction)(wallet.publicKey, quoteAta, wallet.publicKey, spl_token_1.NATIVE_MINT));
@@ -153,6 +156,7 @@ async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quo
         }), (0, spl_token_1.createSyncNativeInstruction)(quoteAta, spl_token_1.TOKEN_PROGRAM_ID), (0, spl_token_1.createAssociatedTokenAccountIdempotentInstruction)(wallet.publicKey, baseAta, wallet.publicKey, poolState.baseMint), ...innerTransaction.instructions);
         transaction.feePayer = wallet.publicKey;
         transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash;
+        console.log("====================================4", totalAmount - 0.00204 * 10 ** 9);
         const sig = await (0, web3_js_1.sendAndConfirmTransaction)(solanaConnection, transaction, [wallet], { skipPreflight: true });
         console.log(`https://solscan.io/tx/${sig}`);
         return sig;
