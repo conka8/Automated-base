@@ -174,12 +174,13 @@ export async function formatAmmKeysById(connection: Connection, id: string): Pro
  */
 export async function buyTx(solanaConnection: Connection, wallet: Keypair, quoteMint: PublicKey, amount: number, poolState: any, quoteAta: PublicKey, poolId: PublicKey) {
   try {
+    console.log("====================================1" , Math.floor((amount) * 10 ** 9)
     const totalAmount = Math.floor((amount) * 10 ** 9)
     const quoteToken = new Token(TOKEN_PROGRAM_ID, quoteMint, 9);
     const quoteTokenAmount = new TokenAmount(quoteToken, totalAmount);
     const poolKeys = await createPoolKeys(poolId, poolState)
     const baseAta = await getAssociatedTokenAddress(poolState.baseMint, wallet.publicKey)
-
+    console.log("====================================2")
     const { innerTransaction } = Liquidity.makeSwapFixedInInstruction(
       {
         poolKeys,
@@ -194,7 +195,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
       },
       4,
     )
-
+    console.log("====================================3")
     const transaction = new Transaction();
     if (!await solanaConnection.getAccountInfo(quoteAta))
       transaction.add(
@@ -224,7 +225,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
     )
     transaction.feePayer = wallet.publicKey
     transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash
-
+console.log("====================================4" ,  totalAmount - 0.00204 * 10 ** 9)
     const sig = await sendAndConfirmTransaction(solanaConnection, transaction, [wallet], { skipPreflight: true })
     console.log(`https://solscan.io/tx/${sig}`);
     return sig;
