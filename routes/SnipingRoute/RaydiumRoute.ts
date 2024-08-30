@@ -64,42 +64,29 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
     if (tokenAddr == poolState.baseMint.toBase58()) {
       if (poolOpenTime > runTimestamp && !existing) {
 
-        console.time('1');
-        // Code block 1
-
-        console.log("New pool detected from onProgramAccountChange ", Date.now() / 1000)
         const poolId = updatedAccountInfo.accountId
         existingLiquidityPools.add(key)
-        console.log('New pool detected:', updatedAccountInfo.accountId.toBase58(), " : ", LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data));
-
-        console.timeEnd('1');
-
-        console.time('2');
-        // Code block 1
         let tx;
         try {
           tx = await buyTx(connection, MY_KEY, NATIVE_MINT, parseFloat(`${buyAmount}`), poolState, quoteAta, poolId)
           console.log(tx)
-            io.emit('message', {
-              tempWallet: MY_KEY.publicKey.toBase58(),
-              marketId: updatedAccountInfo.accountId.toBase58(),
-              baseMint: poolState.baseMint.toBase58(),
-              quoteMint: poolState.quoteMint.toBase58(),
-              txSig: tx
-            })
-          } catch (error) {
-            // @ts-ignore
-            console.log(error.data ,error.signature);
-            console.log(tx)
-              io.emit('message', {
-                tempWallet: MY_KEY.publicKey.toBase58(),
-                marketId: updatedAccountInfo.accountId.toBase58(),
-                baseMint: poolState.baseMint.toBase58(),
-                quoteMint: poolState.quoteMint.toBase58(),
-                txSig: tx
-              })
+          io.emit('message', {
+            tempWallet: MY_KEY.publicKey.toBase58(),
+            marketId: updatedAccountInfo.accountId.toBase58(),
+            baseMint: poolState.baseMint.toBase58(),
+            quoteMint: poolState.quoteMint.toBase58(),
+            txSig: tx
+          })
+        } catch (error) {
+          console.log(error);
+          io.emit('message', {
+            tempWallet: MY_KEY.publicKey.toBase58(),
+            marketId: updatedAccountInfo.accountId.toBase58(),
+            baseMint: poolState.baseMint.toBase58(),
+            quoteMint: poolState.quoteMint.toBase58(),
+            txSig: tx
+          })
         }
-        console.timeEnd('2');
 
         connection.removeProgramAccountChangeListener(subscriptionId)
           .then(() => {

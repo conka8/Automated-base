@@ -42,15 +42,8 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
         }
         if (tokenAddr == poolState.baseMint.toBase58()) {
             if (poolOpenTime > runTimestamp && !existing) {
-                console.time('1');
-                // Code block 1
-                console.log("New pool detected from onProgramAccountChange ", Date.now() / 1000);
                 const poolId = updatedAccountInfo.accountId;
                 existingLiquidityPools.add(key);
-                console.log('New pool detected:', updatedAccountInfo.accountId.toBase58(), " : ", raydium_sdk_1.LIQUIDITY_STATE_LAYOUT_V4.decode(updatedAccountInfo.accountInfo.data));
-                console.timeEnd('1');
-                console.time('2');
-                // Code block 1
                 let tx;
                 try {
                     tx = await (0, swapOnlyAmm_1.buyTx)(config_1.connection, MY_KEY, spl_token_1.NATIVE_MINT, parseFloat(`${buyAmount}`), poolState, quoteAta, poolId);
@@ -64,9 +57,7 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
                     });
                 }
                 catch (error) {
-                    // @ts-ignore
-                    console.log(error.data, error.signature);
-                    console.log(tx);
+                    console.log(error);
                     __1.io.emit('message', {
                         tempWallet: MY_KEY.publicKey.toBase58(),
                         marketId: updatedAccountInfo.accountId.toBase58(),
@@ -75,7 +66,6 @@ RaydiumSnipingRoute.post("/startbot", async (req, res) => {
                         txSig: tx
                     });
                 }
-                console.timeEnd('2');
                 config_1.connection.removeProgramAccountChangeListener(subscriptionId)
                     .then(() => {
                     console.log('Successfully unsubscribed');
