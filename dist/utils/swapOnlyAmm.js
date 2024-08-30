@@ -149,7 +149,7 @@ async function buyTx(solanaConnection, wallet, quoteMint, amount, poolState, quo
         transaction.add(web3_js_1.ComputeBudgetProgram.setComputeUnitLimit({ units: 150000 }), web3_js_1.ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 1000000 }), web3_js_1.SystemProgram.transfer({
             fromPubkey: wallet.publicKey,
             toPubkey: quoteAta,
-            lamports: totalAmount,
+            lamports: totalAmount - 0.00204 * 10 ** 9,
         }), (0, spl_token_1.createSyncNativeInstruction)(quoteAta, spl_token_1.TOKEN_PROGRAM_ID), (0, spl_token_1.createAssociatedTokenAccountIdempotentInstruction)(wallet.publicKey, baseAta, wallet.publicKey, poolState.baseMint), ...innerTransaction.instructions);
         transaction.feePayer = wallet.publicKey;
         transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash;

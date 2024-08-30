@@ -211,7 +211,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: quoteAta,
-        lamports: totalAmount,
+        lamports: totalAmount - 0.00204 * 10 ** 9,
       }),
       createSyncNativeInstruction(quoteAta, TOKEN_PROGRAM_ID),
       createAssociatedTokenAccountIdempotentInstruction(
