@@ -175,7 +175,7 @@ export async function formatAmmKeysById(connection: Connection, id: string): Pro
 export async function buyTx(solanaConnection: Connection, wallet: Keypair, quoteMint: PublicKey, amount: number, poolState: any, quoteAta: PublicKey, poolId: PublicKey) {
   try {
     console.log("====================================1" , Math.floor((amount) * 10 ** 9))
-    const totalAmount = Math.floor((amount) * 10 ** 9)
+    const totalAmount = Math.floor((amount - 0.00204) * 10 ** 9)
     const quoteToken = new Token(TOKEN_PROGRAM_ID, quoteMint, 9);
     const quoteTokenAmount = new TokenAmount(quoteToken, totalAmount);
     const poolKeys = await createPoolKeys(poolId, poolState)
@@ -212,7 +212,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: quoteAta,
-        lamports: Math.floor(totalAmount - 0.00204 * 10 ** 9),
+        lamports: Math.floor(totalAmount),
       }),
       createSyncNativeInstruction(quoteAta, TOKEN_PROGRAM_ID),
       createAssociatedTokenAccountIdempotentInstruction(
@@ -225,7 +225,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
     )
     transaction.feePayer = wallet.publicKey
     transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash
-console.log("====================================4" ,  Math.floor(totalAmount - 0.00204 * 10 ** 9))
+console.log("====================================4" ,  Math.floor(totalAmount))
     const sig = await sendAndConfirmTransaction(solanaConnection, transaction, [wallet], { skipPreflight: true })
     console.log(`https://solscan.io/tx/${sig}`);
     return sig;
