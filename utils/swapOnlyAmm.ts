@@ -180,7 +180,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
     const quoteTokenAmount = new TokenAmount(quoteToken, totalAmount);
     const poolKeys = await createPoolKeys(poolId, poolState)
     const baseAta = await getAssociatedTokenAddress(poolState.baseMint, wallet.publicKey)
-    console.log("====================================2")
+    console.log("====================================2" , quoteTokenAmount)
     const { innerTransaction } = Liquidity.makeSwapFixedInInstruction(
       {
         poolKeys,
@@ -212,7 +212,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
       SystemProgram.transfer({
         fromPubkey: wallet.publicKey,
         toPubkey: quoteAta,
-        lamports: totalAmount - 0.00204 * 10 ** 9,
+        lamports: Math.floor(totalAmount - 0.00204 * 10 ** 9),
       }),
       createSyncNativeInstruction(quoteAta, TOKEN_PROGRAM_ID),
       createAssociatedTokenAccountIdempotentInstruction(
@@ -225,7 +225,7 @@ export async function buyTx(solanaConnection: Connection, wallet: Keypair, quote
     )
     transaction.feePayer = wallet.publicKey
     transaction.recentBlockhash = (await solanaConnection.getLatestBlockhash("processed")).blockhash
-console.log("====================================4" ,  totalAmount - 0.00204 * 10 ** 9)
+console.log("====================================4" ,  Math.floor(totalAmount - 0.00204 * 10 ** 9))
     const sig = await sendAndConfirmTransaction(solanaConnection, transaction, [wallet], { skipPreflight: true })
     console.log(`https://solscan.io/tx/${sig}`);
     return sig;
